@@ -4,7 +4,7 @@
 #
 Name     : CUnit
 Version  : 2.1
-Release  : 5
+Release  : 6
 URL      : http://downloads.sourceforge.net/cunit/CUnit-2.1-3.tar.bz2
 Source0  : http://downloads.sourceforge.net/cunit/CUnit-2.1-3.tar.bz2
 Summary  : A unit testing framework for 'C'
