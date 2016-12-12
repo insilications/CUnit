@@ -4,7 +4,7 @@
 #
 Name     : CUnit
 Version  : 2.1
-Release  : 6
+Release  : 7
 URL      : http://downloads.sourceforge.net/cunit/CUnit-2.1-3.tar.bz2
 Source0  : http://downloads.sourceforge.net/cunit/CUnit-2.1-3.tar.bz2
 Summary  : A unit testing framework for 'C'
@@ -32,6 +32,7 @@ Summary: dev components for the CUnit package.
 Group: Development
 Requires: CUnit-lib
 Requires: CUnit-data
+Provides: CUnit-devel
 
 %description dev
 dev components for the CUnit package.
@@ -58,13 +59,15 @@ lib components for the CUnit package.
 %setup -q -n CUnit-2.1-3
 
 %build
+export LANG=C
 %reconfigure --disable-static
 make V=1  %{?_smp_mflags}
 
 %check
+export LANG=C
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
-export no_proxy=intel.com,localhost
+export no_proxy=localhost
 make VERBOSE=1 V=1 %{?_smp_mflags} check
 
 %install
@@ -116,8 +119,8 @@ rm -rf %{buildroot}
 /usr/include/CUnit/TestDB.h
 /usr/include/CUnit/TestRun.h
 /usr/include/CUnit/Util.h
-/usr/lib64/*.so
-/usr/lib64/pkgconfig/*.pc
+/usr/lib64/libcunit.so
+/usr/lib64/pkgconfig/cunit.pc
 
 %files doc
 %defattr(-,root,root,-)
@@ -125,4 +128,5 @@ rm -rf %{buildroot}
 
 %files lib
 %defattr(-,root,root,-)
-/usr/lib64/*.so.*
+/usr/lib64/libcunit.so.1
+/usr/lib64/libcunit.so.1.0.1
