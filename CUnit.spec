@@ -4,15 +4,15 @@
 #
 Name     : CUnit
 Version  : 2.1.3
-Release  : 14
+Release  : 15
 URL      : https://sourceforge.net/projects/cunit/files/CUnit/2.1-3/CUnit-2.1-3.tar.bz2
 Source0  : https://sourceforge.net/projects/cunit/files/CUnit/2.1-3/CUnit-2.1-3.tar.bz2
 Summary  : A unit testing framework for 'C'
 Group    : Development/Tools
-License  : GPL-2.0 LGPL-2.0
-Requires: CUnit-lib
-Requires: CUnit-data
-Requires: CUnit-doc
+License  : LGPL-2.0
+Requires: CUnit-data = %{version}-%{release}
+Requires: CUnit-lib = %{version}-%{release}
+Requires: CUnit-license = %{version}-%{release}
 BuildRequires : gcc-dev32
 BuildRequires : gcc-libgcc32
 BuildRequires : gcc-libstdc++32
@@ -35,9 +35,10 @@ data components for the CUnit package.
 %package dev
 Summary: dev components for the CUnit package.
 Group: Development
-Requires: CUnit-lib
-Requires: CUnit-data
-Provides: CUnit-devel
+Requires: CUnit-lib = %{version}-%{release}
+Requires: CUnit-data = %{version}-%{release}
+Provides: CUnit-devel = %{version}-%{release}
+Requires: CUnit = %{version}-%{release}
 
 %description dev
 dev components for the CUnit package.
@@ -46,26 +47,19 @@ dev components for the CUnit package.
 %package dev32
 Summary: dev32 components for the CUnit package.
 Group: Default
-Requires: CUnit-lib32
-Requires: CUnit-data
-Requires: CUnit-dev
+Requires: CUnit-lib32 = %{version}-%{release}
+Requires: CUnit-data = %{version}-%{release}
+Requires: CUnit-dev = %{version}-%{release}
 
 %description dev32
 dev32 components for the CUnit package.
 
 
-%package doc
-Summary: doc components for the CUnit package.
-Group: Documentation
-
-%description doc
-doc components for the CUnit package.
-
-
 %package lib
 Summary: lib components for the CUnit package.
 Group: Libraries
-Requires: CUnit-data
+Requires: CUnit-data = %{version}-%{release}
+Requires: CUnit-license = %{version}-%{release}
 
 %description lib
 lib components for the CUnit package.
@@ -74,10 +68,19 @@ lib components for the CUnit package.
 %package lib32
 Summary: lib32 components for the CUnit package.
 Group: Default
-Requires: CUnit-data
+Requires: CUnit-data = %{version}-%{release}
+Requires: CUnit-license = %{version}-%{release}
 
 %description lib32
 lib32 components for the CUnit package.
+
+
+%package license
+Summary: license components for the CUnit package.
+Group: Default
+
+%description license
+license components for the CUnit package.
 
 
 %prep
@@ -87,29 +90,45 @@ cp -a CUnit-2.1-3 build32
 popd
 
 %build
-export LANG=C
-export SOURCE_DATE_EPOCH=1489099289
+export http_proxy=http://127.0.0.1:9/
+export https_proxy=http://127.0.0.1:9/
+export no_proxy=localhost,127.0.0.1,0.0.0.0
+export LANG=C.UTF-8
+export SOURCE_DATE_EPOCH=1569524365
+export GCC_IGNORE_WERROR=1
+export AR=gcc-ar
+export RANLIB=gcc-ranlib
+export NM=gcc-nm
+export CFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
+export FCFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
+export FFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
+export CXXFLAGS="$CXXFLAGS -O3 -ffat-lto-objects -flto=4 "
 %reconfigure --disable-static
-make V=1  %{?_smp_mflags}
+make  %{?_smp_mflags}
 pushd ../build32/
 export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
-export CFLAGS="$CFLAGS -m32"
-export CXXFLAGS="$CXXFLAGS -m32"
-export LDFLAGS="$LDFLAGS -m32"
+export ASFLAGS="${ASFLAGS}${ASFLAGS:+ }--32"
+export CFLAGS="${CFLAGS}${CFLAGS:+ }-m32 -mstackrealign"
+export CXXFLAGS="${CXXFLAGS}${CXXFLAGS:+ }-m32 -mstackrealign"
+export LDFLAGS="${LDFLAGS}${LDFLAGS:+ }-m32 -mstackrealign"
 %reconfigure --disable-static   --libdir=/usr/lib32 --build=i686-generic-linux-gnu --host=i686-generic-linux-gnu --target=i686-clr-linux-gnu
-make V=1  %{?_smp_mflags}
+make  %{?_smp_mflags}
 popd
 
 %check
-export LANG=C
+export LANG=C.UTF-8
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
-export no_proxy=localhost
+export no_proxy=localhost,127.0.0.1,0.0.0.0
 make VERBOSE=1 V=1 %{?_smp_mflags} check
+cd ../build32;
+make VERBOSE=1 V=1 %{?_smp_mflags} check || :
 
 %install
-export SOURCE_DATE_EPOCH=1489099289
+export SOURCE_DATE_EPOCH=1569524365
 rm -rf %{buildroot}
+mkdir -p %{buildroot}/usr/share/package-licenses/CUnit
+cp COPYING %{buildroot}/usr/share/package-licenses/CUnit/COPYING
 pushd ../build32/
 %make_install32
 if [ -d  %{buildroot}/usr/lib32/pkgconfig ]
@@ -168,16 +187,13 @@ popd
 /usr/include/CUnit/Util.h
 /usr/lib64/libcunit.so
 /usr/lib64/pkgconfig/cunit.pc
+/usr/share/man/man3/CUnit.3
 
 %files dev32
 %defattr(-,root,root,-)
 /usr/lib32/libcunit.so
 /usr/lib32/pkgconfig/32cunit.pc
 /usr/lib32/pkgconfig/cunit.pc
-
-%files doc
-%defattr(-,root,root,-)
-%doc /usr/share/man/man3/*
 
 %files lib
 %defattr(-,root,root,-)
@@ -188,3 +204,7 @@ popd
 %defattr(-,root,root,-)
 /usr/lib32/libcunit.so.1
 /usr/lib32/libcunit.so.1.0.1
+
+%files license
+%defattr(0644,root,root,0755)
+/usr/share/package-licenses/CUnit/COPYING
