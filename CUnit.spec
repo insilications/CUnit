@@ -4,7 +4,7 @@
 #
 Name     : CUnit
 Version  : 2.1.3
-Release  : 15
+Release  : 16
 URL      : https://sourceforge.net/projects/cunit/files/CUnit/2.1-3/CUnit-2.1-3.tar.bz2
 Source0  : https://sourceforge.net/projects/cunit/files/CUnit/2.1-3/CUnit-2.1-3.tar.bz2
 Summary  : A unit testing framework for 'C'
@@ -85,6 +85,7 @@ license components for the CUnit package.
 
 %prep
 %setup -q -n CUnit-2.1-3
+cd %{_builddir}/CUnit-2.1-3
 pushd ..
 cp -a CUnit-2.1-3 build32
 popd
@@ -94,14 +95,14 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1569524365
+export SOURCE_DATE_EPOCH=1604441357
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
 export NM=gcc-nm
 export CFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
-export FCFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
-export FFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
+export FCFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=4 "
+export FFLAGS="$FFLAGS -O3 -ffat-lto-objects -flto=4 "
 export CXXFLAGS="$CXXFLAGS -O3 -ffat-lto-objects -flto=4 "
 %reconfigure --disable-static
 make  %{?_smp_mflags}
@@ -120,15 +121,15 @@ export LANG=C.UTF-8
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-make VERBOSE=1 V=1 %{?_smp_mflags} check
+make %{?_smp_mflags} check
 cd ../build32;
-make VERBOSE=1 V=1 %{?_smp_mflags} check || :
+make %{?_smp_mflags} check || :
 
 %install
-export SOURCE_DATE_EPOCH=1569524365
+export SOURCE_DATE_EPOCH=1604441357
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/CUnit
-cp COPYING %{buildroot}/usr/share/package-licenses/CUnit/COPYING
+cp %{_builddir}/CUnit-2.1-3/COPYING %{buildroot}/usr/share/package-licenses/CUnit/ed0e19610ac746d6e0d0f3066e7335bade03be89
 pushd ../build32/
 %make_install32
 if [ -d  %{buildroot}/usr/lib32/pkgconfig ]
@@ -207,4 +208,4 @@ popd
 
 %files license
 %defattr(0644,root,root,0755)
-/usr/share/package-licenses/CUnit/COPYING
+/usr/share/package-licenses/CUnit/ed0e19610ac746d6e0d0f3066e7335bade03be89
