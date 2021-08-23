@@ -1,2 +1,5 @@
 # This file contains recursive sources that require this package
+CUnit-dev
+CUnit-dev32
 ceph
+ceph-dev
